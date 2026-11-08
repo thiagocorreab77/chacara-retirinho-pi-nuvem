@@ -1,0 +1,1 @@
+window.RETIRINHO_CONFIG = {"apiUrl": "https://veaq0pcync.execute-api.us-east-2.amazonaws.com", "authDomain": "https://chacara-retirinho-234432914085.auth.us-east-2.amazoncognito.com", "clientId": "1ic4ufp98nc3q1upgl1915cirp"};

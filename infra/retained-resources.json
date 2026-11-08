@@ -1,0 +1,14 @@
+{
+  "AccessLogsBucket": {
+    "BucketName": "chacara-retirinho-accesslogsbucket-cwbaeixihe4e"
+  },
+  "Pool": {
+    "UserPoolName": "chacara-retirinho-users"
+  },
+  "SiteBucket": {
+    "BucketName": "chacara-retirinho-sitebucket-sebit73i5rn7"
+  },
+  "Table": {
+    "TableName": "chacara-retirinho-Table-BEMN1X9GDN2N"
+  }
+}

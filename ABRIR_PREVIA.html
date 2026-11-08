@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chácara Retirinho | Controle de batatas</title>
+<meta name="theme-color" content="#006634">
+<meta name="description" content="Controle de entradas e saídas de batata da Chácara Retirinho, Grupo Canela.">
+<link rel="stylesheet" href="web/style.css">
+<link rel="stylesheet" href="preview/style.css">
+</head>
+<body>
+<div class="preview-banner" role="region" aria-label="Demonstração local"><div><strong>PRÉVIA LOCAL — DADOS FICTÍCIOS</strong>Teste os ajustes sem alterar o site online. Os testes ficam somente neste navegador. Confira Auditoria e acessos dentro de Integrações, no perfil Administrador.</div><div class="preview-profile"><label for="previewProfile">Simular perfil</label><select id="previewProfile"><option value="admin">Administrador</option><option value="operator">Operador</option><option value="viewer">Visualizador</option></select></div><button type="button" id="previewReset">Restaurar exemplos</button></div>
+<noscript><p class="notice">Ative o JavaScript do navegador para usar o controle de batatas.</p></noscript>
+<section id="loginScreen" class="login-screen" aria-label="Acesso ao sistema">
+  <div class="login-brand">
+    <span class="brand-eyebrow">GESTÃO DA PROPRIEDADE RURAL</span>
+    <img class="login-logo" src="web/assets/logo.jpeg" alt="Chácara Retirinho — Grupo Canela" width="1600" height="900">
+    <div class="login-brand-copy"><span class="yellow-rule"></span><h1>O cuidado do campo.<br>A organização do seu negócio.</h1><p>Entradas, saídas e estoque de batatas<br>reunidos em um só lugar.</p></div>
+    <span class="brand-foot">CHÁCARA RETIRINHO <span>•</span> GRUPO CANELA</span>
+  </div>
+  <div class="login-content">
+    <div class="login-card">
+      <span class="eyebrow">CONTROLE DE BATATAS</span>
+      <h2>Bem-vindo de volta.</h2>
+      <p class="login-intro">Entre para acompanhar a movimentação da propriedade.</p>
+      <form id="loginForm">
+        <p id="loginError" class="form-message error" role="alert" hidden></p>
+        <button class="primary login-submit" type="submit">Entrar no sistema <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="demo-access"><strong>Primeiro acesso?</strong><p>Use o e-mail e a senha temporária recebidos no convite. Você criará sua senha pessoal ao entrar.</p></div>
+      <p class="login-footnote">Acesso exclusivo para pessoas convidadas. Para recuperar sua senha, escolha “Forgot your password?” (Esqueceu sua senha?) na próxima tela.</p>
+    </div>
+    <p class="login-credit">Projeto Integrado · UNIFEOB</p>
+  </div>
+</section>
+<div id="app" hidden>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-top"><img class="header-logo" src="web/assets/logo.jpeg" alt="Chácara Retirinho — Grupo Canela" width="1600" height="900"><div class="account"><span><span class="account-avatar" id="accountAvatar" aria-hidden="true">A</span> <span id="accountName">Administrador</span></span><button class="logout-button" id="logout" type="button">Sair <span aria-hidden="true">↗</span></button></div></div>
+    <div class="header-bottom"><div><span class="eyebrow light">GESTÃO DA PROPRIEDADE</span><h1 tabindex="-1" id="dashboardTitle">Controle de batatas</h1><p>Acompanhe cada entrada. Organize cada saída.</p></div><span class="role-indicator" id="accountRole">Administrador</span></div>
+  </div>
+</header>
+<div class="app-tabs-shell"><div class="app-tabs" role="tablist" aria-label="Áreas do sistema">
+  <button type="button" role="tab" id="tab-overview" aria-controls="view-overview" aria-selected="true" tabindex="0" data-tab="overview">Visão geral</button>
+  <button type="button" role="tab" id="tab-register" aria-controls="view-register" aria-selected="false" tabindex="-1" data-tab="register" data-register-only>Registrar movimentação</button>
+  <button type="button" role="tab" id="tab-users" aria-controls="view-users" aria-selected="false" tabindex="-1" data-tab="users" data-admin-only>Usuários e acessos</button>
+  <button type="button" role="tab" id="tab-integrations" aria-controls="view-integrations" aria-selected="false" tabindex="-1" data-tab="integrations" data-admin-only>Integrações</button>
+</div></div>
+<main class="wrap">
+  <div class="notice"><span class="status-dot" aria-hidden="true"></span><div><strong>Dados de demonstração.</strong> <span id="syncStatus">Carregando registros...</span></div><button class="secondary" id="refreshData" type="button">Atualizar</button></div>
+  <div id="storageError" class="form-message error" role="alert" hidden></div>
+
+  <section id="view-overview" class="page-view" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+  <section class="stats" aria-label="Resumo">
+    <div class="stat"><div class="label">Caixotes recebidos <span class="stat-icon" aria-hidden="true">↓</span></div><div class="value" id="totalCaixotes">0</div><div class="sub">Soma dos registros filtrados</div></div>
+    <div class="stat"><div class="label">Sacos recebidos <span class="stat-icon" aria-hidden="true">▤</span></div><div class="value" id="totalSacos">0</div><div class="sub" id="totalMeiao">0 sacos meião</div></div>
+    <div class="stat"><div class="label">Peso recebido <span class="stat-icon" aria-hidden="true">kg</span></div><div class="value accent" id="totalNet">0 kg</div><div class="sub">Bruto menos tara informada</div><div class="sub" id="totalWeightOut">Saídas: 0 kg</div><div class="sub" id="periodWeightNote"></div></div>
+    <div class="stat"><div class="label">Caixotes que saíram <span class="stat-icon" aria-hidden="true">↑</span></div><div class="value" id="totalOut">0</div><div class="sub" id="totalOutOther">0 sacos · 0 sacos meião · 0 bags</div></div>
+    <div class="stat stock-stat" aria-live="polite"><div class="label">Estoque atual <span class="stat-icon" aria-hidden="true">▦</span></div><div class="value accent" id="currentStock">0</div><div class="sub">caixotes disponíveis</div><div class="stock-units" id="currentStockOther"></div><div class="stock-weight"><span id="stockWeightLabel">Estoque em kg</span><strong id="currentWeight">0 kg</strong><span id="stockWeightNote"></span></div><div class="sub" id="stockScope"></div></div>
+  </section>
+
+  <div class="panel filter-panel">
+    <div class="panel-body">
+      <div class="filter-heading"><h2>Consultar movimentações</h2><button id="clearFilters" class="text-button" type="button">Limpar filtros</button></div>
+      <div class="filters" id="filters">
+        <div class="field filter-search"><label for="search">Buscar</label><input id="search" placeholder="Responsável, motorista, placa..."></div>
+        <div class="field"><label for="filterQuality">Qualidade / tipo</label><select id="filterQuality"><option value="">Todas as qualidades</option></select></div>
+        <div class="field"><label for="filterSize">Tamanho da batata</label><select id="filterSize"><option value="">Todos os tamanhos</option><option value="1">Tamanho 1</option><option value="2">Tamanho 2</option><option value="3">Tamanho 3</option></select></div>
+        <div class="field"><label for="filterStart">Data inicial</label><input id="filterStart" type="date" aria-describedby="filterError"></div>
+        <div class="field"><label for="filterEnd">Data final</label><input id="filterEnd" type="date" aria-describedby="filterError"></div>
+        <div class="field"><label for="filterDest">Câmara fria (entradas)</label><select id="filterDest"><option value="">Todas as câmaras frias</option><option>Câmara 1</option><option>Câmara 2</option><option>Câmara 3</option><option>Câmara 4</option><option>Câmara 5</option></select></div>
+      </div>
+      <p id="filterError" class="form-message error" role="alert" hidden></p>
+      <p class="hint filter-hint">As datas inicial e final estão incluídas no período. Datas e busca filtram os históricos e os totais de movimentação; a câmara filtra apenas entradas. O estoque atual considera todas as datas e câmaras, seguindo qualidade e tamanho. Embalagens e kg são contabilizados separadamente, sem conversão automática.</p>
+    </div>
+  </div>
+
+    <div class="page-intro compact"><div><span class="eyebrow">MOVIMENTAÇÕES</span><h2>Históricos da propriedade</h2><p>Confira as entradas e saídas registradas.</p></div><button class="primary" type="button" data-view="register" data-register-only>＋ Novo registro</button></div>
+    <div class="history-stack">
+    <div class="panel">
+      <div class="panel-head"><h2>Histórico de entradas</h2><p>Confira as quantidades, os tipos e os tamanhos recebidos.</p></div>
+      <div class="table-wrap">
+        <table aria-label="Histórico de entradas">
+          <thead><tr><th>Data</th><th>Registrado por</th><th>Caminhão / motorista</th><th>Qualidade / tamanho</th><th>Caixotes / sacos / meião</th><th>Bruto / tara / líquido</th><th>Câmara fria</th><th data-admin-only>Ação</th></tr></thead>
+          <tbody id="inBody"></tbody>
+        </table>
+        <div class="empty" id="inEmpty">Nenhuma entrada encontrada.</div>
+      </div>
+      <div class="table-foot"><span id="inCount">0 registros</span><span><button class="secondary" type="button" id="exportIn" data-admin-only data-compact="true">↓ Exportar entradas (CSV)</button></span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Histórico de saídas</h2><p>Retiradas por data, espécie, tamanho e embalagem.</p></div>
+      <div class="table-wrap">
+        <table class="exit-table" aria-label="Histórico de saídas">
+          <thead><tr><th>Data</th><th>Registrado por</th><th>Espécie / qualidade</th><th>Tamanho</th><th>Quantidade / embalagem</th><th>Peso líquido (kg)</th><th>Observações</th><th data-admin-only>Ação</th></tr></thead>
+          <tbody id="outBody"></tbody>
+        </table>
+        <div class="empty" id="outEmpty">Nenhuma saída encontrada.</div>
+      </div>
+      <div class="table-foot"><span id="outCount">0 registros</span><span><button class="secondary" type="button" id="exportOut" data-admin-only data-compact="true">↓ Exportar saídas (CSV)</button></span></div>
+    </div>
+    </div>
+  </section>
+
+  <section id="view-register" class="page-view" role="tabpanel" aria-labelledby="tab-register" tabindex="0" hidden>
+    <div class="page-intro"><div><span class="eyebrow">ROTINA DA PROPRIEDADE</span><h2>Registrar movimentação</h2><p>Escolha o formulário de entrada ou de saída. Os registros aparecem no histórico assim que forem salvos.</p></div><button class="secondary" type="button" data-view="overview">Ver históricos</button></div>
+    <div class="registration-grid">
+    <div class="panel">
+      <div class="panel-head"><h2>Registrar nova carga</h2><p>Informe as quantidades recebidas, a qualidade e o tamanho da batata.</p></div>
+      <div class="panel-body">
+        <form id="loadForm">
+          <p class="hint">Responsável pelo lançamento: <strong data-record-author></strong>. Preenchido automaticamente pelo seu acesso.</p>
+          <p id="entryError" class="form-message error" role="alert" hidden></p>
+          <div class="form-grid">
+            <div class="field"><label for="date">Data e hora</label><input id="date" type="datetime-local" required></div>
+            <div class="field"><label for="caixotes">Quantidade de caixotes</label><input id="caixotes" type="number" min="0" step="1" value="0" required></div>
+            <div class="field"><label for="sacos">Quantidade de sacos</label><input id="sacos" type="number" min="0" step="1" value="0" required></div>
+            <div class="field"><label for="meiao">Quantidade de sacos meião</label><input id="meiao" type="number" min="0" step="1" value="0" required></div>
+            <div class="field"><label for="quality">Qualidade / tipo</label><select id="quality" required></select></div>
+            <div class="field"><label for="size">Tamanho da batata</label><select id="size" required><option value="1">Tamanho 1</option><option value="2">Tamanho 2</option><option value="3">Tamanho 3</option></select></div>
+            <div class="field full" id="otherWrap" hidden><label for="qualityOther">Tipo (quando não está na lista)</label><input id="qualityOther" placeholder="Ex.: Batata Cupido"></div>
+            <div class="field"><label for="driver">Motorista</label><input id="driver" placeholder="Nome do motorista"></div>
+            <div class="field"><label for="truck">Placa do caminhão</label><input id="truck" placeholder="ABC1D23"></div>
+            <div class="field"><label for="bags">Quantidade de bags</label><input id="bags" type="number" min="0" step="1" value="0"></div>
+            <div class="field"><label for="destination">Câmara fria</label><select id="destination"><option>Câmara 1</option><option>Câmara 2</option><option>Câmara 3</option><option>Câmara 4</option><option>Câmara 5</option></select></div>
+            <div class="field"><label for="gross">Peso bruto (kg)</label><input id="gross" type="number" min="0" step="0.01" placeholder="Ex.: 28600" value="0"></div>
+            <div class="field"><label for="tare">Tara do caminhão (kg)</label><input id="tare" type="number" min="0" step="0.01" placeholder="Ex.: 12400" value="0"><span class="hint">Peso do veículo vazio, se conhecido.</span></div>
+            <div class="field full"><label for="notes">Observações</label><textarea id="notes" rows="2" placeholder="Talhão, fornecedor, divergência na pesagem..."></textarea></div>
+          </div>
+          <div class="actions"><button class="primary" type="submit">＋ Registrar entrada</button><button class="secondary" type="reset" id="clearForm">Limpar formulário</button></div>
+        </form>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Registrar saída</h2><p>Informe a quantidade e a embalagem retirada. O saldo é conferido para a qualidade e o tamanho selecionados.</p></div>
+      <div class="panel-body">
+        <form id="outForm">
+          <p class="hint">Responsável pelo lançamento: <strong data-record-author></strong>. Preenchido automaticamente pelo seu acesso.</p>
+          <div class="stock-hint" id="availableStock" aria-live="polite"></div>
+          <p id="exitError" class="form-message error" role="alert" hidden></p>
+          <div class="form-grid">
+            <div class="field"><label for="outDate">Data da saída</label><input id="outDate" type="date" required></div>
+            <div class="field"><label for="outQuantity">Quantidade de saída</label><input id="outQuantity" type="number" min="1" step="1" placeholder="Ex.: 20" required></div>
+            <div class="field full"><label for="outUnit">Unidade de armazenamento (embalagem)</label><select id="outUnit" required><option value="caixotes">Caixote</option><option value="sacos">Saco</option><option value="meiao">Saco meião</option><option value="bags">Bag</option></select></div>
+            <div class="field"><label for="outQuality">Espécie / qualidade</label><select id="outQuality" required></select></div>
+            <div class="field"><label for="outSize">Tamanho da batata</label><select id="outSize" required><option value="1">Tamanho 1</option><option value="2">Tamanho 2</option><option value="3">Tamanho 3</option></select></div>
+            <div class="field full" id="outOtherWrap" hidden><label for="outQualityOther">Tipo (quando não está na lista)</label><input id="outQualityOther" placeholder="Ex.: Batata Cupido"></div>
+            <div class="field full"><label for="outWeight">Peso líquido da saída (kg)</label><input id="outWeight" type="number" min="0.01" max="1000000000" step="0.01" placeholder="Ex.: 1250,50" aria-describedby="outWeightHelp"><span class="hint" id="outWeightHelp">Peso somente das batatas retiradas, sem embalagem. Se não houve pesagem, deixe em branco; o saldo em kg ficará parcial.</span></div>
+            <div class="field full"><label for="outNotes">Observações</label><textarea id="outNotes" rows="2" placeholder="Cliente, destino, motivo da retirada..."></textarea></div>
+          </div>
+          <div class="actions"><button class="primary" type="submit">＋ Registrar saída</button><button class="secondary" type="reset" id="clearOut">Limpar formulário</button></div>
+        </form>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <section id="view-users" class="page-view" role="tabpanel" aria-labelledby="tab-users" tabindex="0" hidden>
+    <div class="page-intro"><div><span class="eyebrow">ADMINISTRAÇÃO</span><h2>Usuários e acessos</h2><p>Defina quem pode consultar, registrar movimentações ou administrar o sistema.</p></div><span class="page-badge">Somente administrador</span></div>
+    <div class="role-cards">
+      <article><span class="role-tag">Visualizador</span><p>Visualiza os históricos e os indicadores. Pode usar os filtros.</p></article>
+      <article><span class="role-tag">Operador</span><p>Consulta os históricos e registra entradas e saídas.</p></article>
+      <article><span class="role-tag">Administrador</span><p>Acesso completo: registros, exclusões, exportações, usuários e integrações.</p></article>
+    </div>
+    <p class="hint access-note">As permissões são verificadas no servidor. Cada pessoa recebe um convite por e-mail e define sua própria senha.</p>
+    <div class="users-grid">
+      <div class="panel"><div class="panel-head"><h2>Convidar pessoa</h2><p>Cadastros fictícios locais. Nenhum e-mail será enviado.</p></div><div class="panel-body">
+        <form id="userForm">
+          <p id="userError" class="form-message error" role="alert" hidden></p>
+          <div class="form-grid">
+            <div class="field full"><label for="newName">Nome</label><input id="newName" required maxlength="60" autocomplete="off" placeholder="Nome da pessoa"></div>
+            <div class="field full"><label for="newEmail">E-mail de acesso</label><input id="newEmail" required type="email" maxlength="254" autocomplete="email" placeholder="pessoa@exemplo.com"></div>
+            <div class="field full"><label for="newRole">Perfil de acesso</label><select id="newRole"><option value="viewer">Visualizador — somente visualização</option><option value="operator">Operador — registros e visualização</option><option value="admin">Administrador — acesso completo</option></select></div>
+          </div>
+          <div class="actions"><button class="primary" type="submit" id="createUser">Enviar convite</button></div>
+        </form>
+      </div></div>
+      <div class="panel"><div class="panel-head"><h2>Logins cadastrados</h2><p>Altere o perfil ou pause o acesso de um usuário. Seu próprio acesso de administrador é preservado.</p></div>
+        <div class="table-wrap"><table class="users-table" aria-label="Logins cadastrados"><thead><tr><th>Nome / e-mail</th><th>Perfil</th><th>Situação</th><th>Acesso</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+        <div class="table-foot"><span id="usersCount"></span><span>Acesso fictício para conferência</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-integrations" class="page-view" role="tabpanel" aria-labelledby="tab-integrations" tabindex="0" hidden>
+    <div class="page-intro"><div><span class="eyebrow">INFRAESTRUTURA</span><h2>Integrações e ambiente</h2><p>Os serviços abaixo são simulados nesta prévia. Não há consulta ao ambiente online.</p></div><button class="secondary" id="checkIntegrations" type="button">Verificar serviços</button></div>
+    <p id="integrationError" class="form-message error" role="alert" hidden></p>
+    <div class="integration-grid">
+      <article class="panel integration-card"><div class="integration-top"><span class="integration-symbol">☁</span><span class="status-tag">HTTPS</span></div><h3>Hospedagem AWS</h3><p>Site distribuído pelo Amazon CloudFront, com arquivos armazenados de forma privada no Amazon S3.</p><div class="integration-detail">Prévia local · sem conexão com AWS</div></article>
+      <article class="panel integration-card"><div class="integration-top"><span class="integration-symbol">▤</span><span class="status-tag" id="databaseStatus">A verificar</span></div><h3>Banco de dados</h3><p>Amazon DynamoDB. Estoque compartilhado entre os usuários e backup contínuo habilitado.</p><div class="integration-detail" id="databaseSummary"></div></article>
+      <article class="panel integration-card"><div class="integration-top"><span class="integration-symbol">↗</span><span class="status-tag" id="apiStatus">A verificar</span></div><h3>API do sistema</h3><p>API Gateway e AWS Lambda conferem as permissões e o saldo antes de salvar cada movimentação.</p><div class="integration-detail" id="serviceCheckedAt">Nenhuma verificação concluída</div></article>
+      <article class="panel integration-card"><div class="integration-top"><span class="integration-symbol">◎</span><span class="status-tag">Sessão autenticada</span></div><h3>Autenticação</h3><p>Amazon Cognito. Acesso por convite, senha pessoal e perfis de visualizador, operador e administrador.</p><div class="integration-detail" id="usersSummary"></div></article>
+    </div>
+    <div class="panel audit-panel">
+      <div class="panel-head"><h2>Auditoria e acessos</h2><p>Entradas, saídas, exclusões, convites e alterações de acesso. Somente consulta; os eventos não podem ser apagados por esta interface.</p></div>
+      <div class="panel-body">
+        <p class="hint">A auditoria começa quando esta versão for publicada. Acessos representam sessões autenticadas observadas pelo sistema; não incluem tentativas de senha recusadas na tela externa de login.</p>
+        <div class="audit-controls"><div class="field"><label for="auditSearch">Buscar nos eventos carregados</label><input id="auditSearch" placeholder="Pessoa, ação ou registro..."></div><div class="field"><label for="auditType">Tipo de evento</label><select id="auditType"><option value="">Todos</option><option value="movement">Movimentações</option><option value="session.">Acessos</option><option value="user.">Usuários e permissões</option></select></div><button id="refreshAudit" class="secondary" type="button">Atualizar auditoria</button></div>
+        <p id="auditError" class="form-message error" role="alert" hidden></p>
+        <p id="auditSummary" class="hint" aria-live="polite">Clique em Atualizar auditoria para consultar.</p>
+      </div>
+      <div class="table-wrap"><table class="audit-table" aria-label="Auditoria do sistema"><thead><tr><th>Data e hora</th><th>Responsável</th><th>Ação</th><th>Registro / alterações</th></tr></thead><tbody id="auditBody"></tbody></table><div class="empty" id="auditEmpty">Nenhum evento carregado.</div></div>
+      <div class="table-foot"><span id="auditCount"></span><button class="secondary" id="moreAudit" type="button" hidden>Carregar mais eventos</button></div>
+    </div>
+    <div class="panel"><div class="panel-head"><h2>Projeto e créditos</h2><p>O uso dos serviços consome os créditos disponíveis do projeto gratuito. Consulte o saldo e a validade em <a href="https://settings.aws.com/" target="_blank" rel="noopener noreferrer">AWS Settings → Billing</a>. Esta tela verifica a API e a leitura do banco; não consulta faturamento.</p></div></div>
+  </section>
+  <div class="closing-note"><strong>Seu controle, sempre organizado.</strong><span>Acompanhe os históricos para manter as movimentações da propriedade organizadas.</span></div>
+  <footer><span>Chácara Retirinho · Grupo Canela</span><span>Projeto Integrado — Computação em Nuvem e Qualidade de Software</span></footer>
+</main>
+</div>
+<dialog id="deleteDialog" aria-labelledby="deleteTitle" aria-describedby="deleteDescription">
+  <h2 id="deleteTitle">Excluir registro?</h2><p id="deleteDescription"></p>
+  <form method="dialog" class="actions"><button class="secondary" value="cancel" autofocus>Cancelar</button><button class="danger" id="confirmDelete" type="button">Excluir registro</button></form>
+</dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="preview/access.js"></script>
+<script src="web/inventory.js"></script>
+<script src="web/script.js"></script>
+</body>
+</html>

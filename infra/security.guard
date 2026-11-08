@@ -1,0 +1,41 @@
+# Controles específicos deste aplicativo. Não equivalem a auditoria integral da AWS.
+let buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+rule s3_private_encrypted_versioned when %buckets !empty {
+  %buckets {
+    Properties.PublicAccessBlockConfiguration.BlockPublicAcls == true
+    Properties.PublicAccessBlockConfiguration.BlockPublicPolicy == true
+    Properties.PublicAccessBlockConfiguration.IgnorePublicAcls == true
+    Properties.PublicAccessBlockConfiguration.RestrictPublicBuckets == true
+    Properties.BucketEncryption.ServerSideEncryptionConfiguration !empty
+    Properties.VersioningConfiguration.Status == 'Enabled'
+    DeletionPolicy == 'Retain'
+  }
+}
+let tables = Resources.*[ Type == 'AWS::DynamoDB::Table' ]
+rule database_recovery when %tables !empty {
+  %tables {
+    Properties.DeletionProtectionEnabled == true
+    Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled == true
+    DeletionPolicy == 'Retain'
+    UpdateReplacePolicy == 'Retain'
+  }
+}
+rule login_invitation_only {
+  Resources.Pool.Properties.AdminCreateUserConfig.AllowAdminCreateUserOnly == true
+  Resources.Client.Properties.GenerateSecret == false
+  Resources.Client.Properties.EnableTokenRevocation == true
+  Resources.Client.Properties.AllowedOAuthFlows == ['code']
+  Resources.Route.Properties.AuthorizationType == 'JWT'
+  Resources.Route.Properties.AuthorizationScopes !empty
+}
+rule https_and_origin_control {
+  Resources.Distribution.Properties.DistributionConfig.DefaultCacheBehavior.ViewerProtocolPolicy == 'redirect-to-https'
+  Resources.OriginAccess.Properties.OriginAccessControlConfig.SigningBehavior == 'always'
+  Resources.Headers.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.ContentSecurityPolicy.Override == true
+  Resources.Headers.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.FrameOptions.FrameOption == 'DENY'
+}
+rule credits_and_scope {
+  Resources.Pool.Properties.UserPoolTier == 'LITE'
+  Resources.PoolDomain.Properties.ManagedLoginVersion == 1
+  Resources.Stage.Properties.DefaultRouteSettings.ThrottlingRateLimit <= 5
+}

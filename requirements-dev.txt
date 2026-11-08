@@ -1,0 +1,5 @@
+boto3[crt]==1.43.123
+moto[dynamodb,cognitoidp]==5.2.5
+pytest==9.2.0
+requests==2.34.2
+cfn-lint==1.59.0

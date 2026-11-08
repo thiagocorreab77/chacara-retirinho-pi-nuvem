@@ -1,0 +1,6 @@
+.preview-banner { padding: 14px 24px; background: #fff3ce; border-bottom: 2px solid #b5932d; color: #59491c; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 13px; line-height: 1.6; }
+.preview-banner strong { display: block; }
+.preview-banner button { flex-shrink: 0; background: #fffaf0; border: 1px solid #d2bc77; }
+@media(max-width:560px){ .preview-banner { align-items: flex-start; flex-direction: column; padding: 14px 16px; gap: 10px; } }
+
+.preview-profile { min-width: 190px; display: grid; gap: 6px; }
